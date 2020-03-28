@@ -23,15 +23,15 @@ type Message struct {
 	Data interface{}
 }
 
-//Get makes a get request to a api url with retry mechanisms
-func Get(url, token, tokenKey string) (*http.Response, error) {
-	/*
-	 * First we will initalize the client
-	 * Then will first set the headers
-	 * Then we will send the get request
-	 * Then we will return the response
-	 */
-	//initalizing the client
+type myHTTPClient struct {
+	token    string
+	tokenKey string
+	domain   string
+}
+
+func (c *myHTTPClient) Do(request *http.Request) (*http.Response, error) {
+	cookie := http.Cookie{Name: c.tokenKey, Value: c.token, Domain: c.domain, Path: "/"}
+	request.AddCookie(&cookie)
 	initalTimeout := 2 * time.Millisecond
 	maxTimeout := 9 * time.Millisecond
 	exponentFactor := float64(2)
@@ -44,13 +44,27 @@ func Get(url, token, tokenKey string) (*http.Response, error) {
 		heimdallC.WithRetrier(retrier),
 		heimdallC.WithRetryCount(4),
 	)
+	return client.Do(request)
+}
 
-	//setting the headers
-	headers := http.Header{}
-	headers.Add(tokenKey, token)
+//Get makes a get request to a api url with retry mechanisms
+func Get(domain, url, token, tokenKey string) (*http.Response, error) {
+	/*
+	 * First we will initalize the client
+	 * Then we will send the get request
+	 * Then we will return the response
+	 */
+	//initalizing the client
+	client := heimdallC.NewClient(
+		heimdallC.WithHTTPClient(&myHTTPClient{
+			token:    token,
+			tokenKey: tokenKey,
+			domain:   domain,
+		}),
+	)
 
 	//then we will make the request
-	res, err := client.Get(url, headers)
+	res, err := client.Get(url, http.Header{})
 	if err != nil {
 		return nil, err
 	}
@@ -60,33 +74,23 @@ func Get(url, token, tokenKey string) (*http.Response, error) {
 }
 
 //Post makes a post request to a api url with retry mechanisms
-func Post(url, token, tokenKey string, body io.Reader) (*http.Response, error) {
+func Post(domain, url, token, tokenKey string, body io.Reader) (*http.Response, error) {
 	/*
 	 * First we will initalize the client
-	 * Then will first set the headers
-	 * Then we will send the get request
+	 * Then we will send the post request
 	 * Then we will return the response
 	 */
 	//initalizing the client
-	initalTimeout := 2 * time.Millisecond
-	maxTimeout := 9 * time.Millisecond
-	exponentFactor := float64(2)
-	maximumJitterInterval := 2 * time.Millisecond
-	backoff := heimdall.NewExponentialBackoff(initalTimeout, maxTimeout, exponentFactor, maximumJitterInterval)
-	retrier := heimdall.NewRetrier(backoff)
-	timeout := 1000 * time.Millisecond
 	client := heimdallC.NewClient(
-		heimdallC.WithHTTPTimeout(timeout),
-		heimdallC.WithRetrier(retrier),
-		heimdallC.WithRetryCount(4),
+		heimdallC.WithHTTPClient(&myHTTPClient{
+			token:    token,
+			tokenKey: tokenKey,
+			domain:   domain,
+		}),
 	)
 
-	//setting the headers
-	headers := http.Header{}
-	headers.Add(tokenKey, token)
-
 	//then we will make the request
-	res, err := client.Post(url, body, headers)
+	res, err := client.Post(url, body, http.Header{})
 	if err != nil {
 		return nil, err
 	}

@@ -7,7 +7,6 @@ package datastores
 
 import (
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"strconv"
 
@@ -44,9 +43,9 @@ func ListDatastores(l log.Log, discoveryAddress, discoveryToken, appToken string
 	//now we will try to get list of services
 	result := []services.Service{}
 	for _, v := range svs {
-		targetURL := v.Address + ":" + strconv.Itoa(v.Port) + "/services/datastore/list"
+		targetURL := "http://" + v.Address + ":" + strconv.Itoa(v.Port) + "/services/datastore/list"
 		l.Info("going to get the list of services from", targetURL)
-		res, err := httpclient.Get(targetURL, appToken, "auth-token")
+		res, err := httpclient.Get(v.Address, targetURL, appToken, "auth-token")
 		if err != nil {
 			//error while making the request to get the list of services
 			l.Error("error while getting the list of services from data-store-service at", targetURL, err)
@@ -76,10 +75,6 @@ func ListDatastores(l log.Log, discoveryAddress, discoveryToken, appToken string
 		//got the response
 		l.Info("got the response message from the data-integration service", p.Message)
 		result = p.Data
-	}
-
-	if len(result) == 0 {
-		return nil, errors.New("couldn't fetch any services")
 	}
 
 	return result, nil
