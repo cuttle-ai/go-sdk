@@ -10,10 +10,10 @@ import (
 	"io/ioutil"
 	"strconv"
 
+	"github.com/cuttle-ai/brain/log"
 	"github.com/cuttle-ai/db-toolkit/datastores/services"
 	"github.com/cuttle-ai/go-sdk/discovery"
 	"github.com/cuttle-ai/go-sdk/httpclient"
-	"github.com/cuttle-ai/go-sdk/log"
 	"github.com/hashicorp/consul/api"
 )
 

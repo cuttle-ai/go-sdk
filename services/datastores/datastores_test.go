@@ -8,8 +8,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cuttle-ai/go-sdk/env"
-	"github.com/cuttle-ai/go-sdk/log"
+	"github.com/cuttle-ai/brain/env"
+	"github.com/cuttle-ai/brain/log"
 	"github.com/cuttle-ai/go-sdk/services/datastores"
 )
 

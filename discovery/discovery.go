@@ -7,7 +7,7 @@
 package discovery
 
 import (
-	"github.com/cuttle-ai/go-sdk/log"
+	"github.com/cuttle-ai/brain/log"
 	"github.com/hashicorp/consul/api"
 )
 
