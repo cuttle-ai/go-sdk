@@ -85,7 +85,7 @@ func ListDatastores(l log.Log, discoveryAddress, discoveryToken, appToken string
 //discoveryToken is the token to be used to talk to the discovery service in the cuttle platform
 //appToken is the authentication token of the user who is logged into the system
 //serviceID is the id of the service
-func GetDatastore(l log.Log, discoveryAddress, discoveryToken, appToken string, serviceID uint) (services.Service, error) {
+func GetDatastore(l log.Log, discoveryAddress, discoveryToken, appToken string, serviceID uint) (*services.Service, error) {
 	/*
 	 * First we will create the discovery config
 	 * Then get the data integration services from discovery service
@@ -105,7 +105,7 @@ func GetDatastore(l log.Log, discoveryAddress, discoveryToken, appToken string, 
 	}
 
 	//now we will try to get info of the service
-	result := services.Service{}
+	result := &services.Service{}
 	for _, v := range svs {
 		targetURL := "http://" + v.Address + ":" + strconv.Itoa(v.Port) + "/services/datastore/get"
 		l.Info("going to get the list of services from", targetURL)
@@ -128,7 +128,7 @@ func GetDatastore(l log.Log, discoveryAddress, discoveryToken, appToken string, 
 		//parsing the response
 		p := struct {
 			Message string
-			Data    services.Service
+			Data    *services.Service
 		}{}
 		err = json.Unmarshal(body, &p)
 		if err != nil { //error while making the parsing the response from the api
