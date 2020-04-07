@@ -6,6 +6,7 @@
 package datastores
 
 import (
+	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"strconv"
@@ -15,6 +16,7 @@ import (
 	"github.com/cuttle-ai/go-sdk/discovery"
 	"github.com/cuttle-ai/go-sdk/httpclient"
 	"github.com/hashicorp/consul/api"
+	"github.com/jinzhu/gorm"
 )
 
 //ListDatastores returns the list of data stores available in the platform
@@ -106,10 +108,16 @@ func GetDatastore(l log.Log, discoveryAddress, discoveryToken, appToken string, 
 
 	//now we will try to get info of the service
 	result := &services.Service{}
+	payload, err := json.Marshal(services.Service{Model: gorm.Model{ID: serviceID}})
+	if err != nil {
+		//error while encoding the service
+		l.Error("error while encoding the service")
+		return nil, err
+	}
 	for _, v := range svs {
 		targetURL := "http://" + v.Address + ":" + strconv.Itoa(v.Port) + "/services/datastore/get"
 		l.Info("going to get the list of services from", targetURL)
-		res, err := httpclient.Get(v.Address, targetURL, appToken, "auth-token")
+		res, err := httpclient.Post(v.Address, targetURL, appToken, "auth-token", bytes.NewBuffer(payload))
 		if err != nil {
 			//error while making the request to get the info of the service
 			l.Error("error while getting the info of service from data-store-service at", targetURL, err)
