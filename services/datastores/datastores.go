@@ -77,6 +77,7 @@ func ListDatastores(l log.Log, discoveryAddress, discoveryToken, appToken string
 		//got the response
 		l.Info("got the response message from the data-integration service", p.Message)
 		result = p.Data
+		break
 	}
 
 	return result, nil
