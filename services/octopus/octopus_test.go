@@ -13,7 +13,7 @@ import (
 	"github.com/cuttle-ai/go-sdk/services/octopus"
 )
 
-func TestListDatastores(t *testing.T) {
+func TestRemoveDict(t *testing.T) {
 	l := log.NewLogger()
 	env.LoadEnv(l)
 	appToken := os.Getenv("APP_TOKEN")
