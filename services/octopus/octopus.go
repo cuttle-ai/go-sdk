@@ -99,7 +99,7 @@ func UpdateDict(l log.Log, discoveryAddress, discoveryToken, appToken string) er
 	//now we will try to remove the dict
 	for _, v := range svs {
 		targetURL := "http://" + v.Address + ":" + strconv.Itoa(v.Port) + "/dict/update"
-		l.Info("going to remove the dict from", targetURL)
+		l.Info("going to update the dict from", targetURL)
 		res, err := httpclient.Get(v.Address, targetURL, appToken, "auth-token")
 		if err != nil {
 			//error while making the request to update the dict
