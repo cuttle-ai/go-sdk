@@ -10,7 +10,7 @@ import (
 	"io/ioutil"
 	"strconv"
 
-	"github.com/cuttle-ai/brain/log"
+	"github.com/cuttle-ai/brain/appctx"
 	"github.com/cuttle-ai/db-toolkit/datastores/services"
 	"github.com/cuttle-ai/go-sdk/discovery"
 	"github.com/cuttle-ai/go-sdk/httpclient"
@@ -18,7 +18,7 @@ import (
 )
 
 //RemoveDict will remove the dict corresponding to a user from the cache
-func RemoveDict(l log.Log, discoveryAddress, discoveryToken, appToken string) error {
+func RemoveDict(appCtx appctx.AppContext) error {
 	/*
 	 * First we will create the discovery config
 	 * Then get the data integration services from discovery service
@@ -26,8 +26,9 @@ func RemoveDict(l log.Log, discoveryAddress, discoveryToken, appToken string) er
 	 */
 	//creating the discovery config
 	dConfig := api.DefaultConfig()
-	dConfig.Address = discoveryAddress
-	dConfig.Token = discoveryToken
+	dConfig.Address = appCtx.DiscoveryAddress()
+	dConfig.Token = appCtx.DiscoveryToken()
+	l := appCtx.Logger()
 
 	//getting the octopus services
 	svs, err := discovery.GetServices(dConfig, "Brain-Octopus-Service", l)
@@ -41,7 +42,7 @@ func RemoveDict(l log.Log, discoveryAddress, discoveryToken, appToken string) er
 	for _, v := range svs {
 		targetURL := "http://" + v.Address + ":" + strconv.Itoa(v.Port) + "/dict/remove"
 		l.Info("going to remove the dict from", targetURL)
-		res, err := httpclient.Get(v.Address, targetURL, appToken, "auth-token")
+		res, err := httpclient.Get(v.Address, targetURL, appCtx.AccessToken(), "auth-token")
 		if err != nil {
 			//error while making the request to remove the dict
 			l.Error("error while removing the dict from octopus service at", targetURL, err)
@@ -77,7 +78,7 @@ func RemoveDict(l log.Log, discoveryAddress, discoveryToken, appToken string) er
 }
 
 //UpdateDict will update the dict corresponding to a user in cache with updated datasets
-func UpdateDict(l log.Log, discoveryAddress, discoveryToken, appToken string) error {
+func UpdateDict(appCtx appctx.AppContext) error {
 	/*
 	 * First we will create the discovery config
 	 * Then get the data integration services from discovery service
@@ -85,8 +86,9 @@ func UpdateDict(l log.Log, discoveryAddress, discoveryToken, appToken string) er
 	 */
 	//creating the discovery config
 	dConfig := api.DefaultConfig()
-	dConfig.Address = discoveryAddress
-	dConfig.Token = discoveryToken
+	dConfig.Address = appCtx.DiscoveryAddress()
+	dConfig.Token = appCtx.DiscoveryToken()
+	l := appCtx.Logger()
 
 	//getting the octopus services
 	svs, err := discovery.GetServices(dConfig, "Brain-Octopus-Service", l)
@@ -100,7 +102,7 @@ func UpdateDict(l log.Log, discoveryAddress, discoveryToken, appToken string) er
 	for _, v := range svs {
 		targetURL := "http://" + v.Address + ":" + strconv.Itoa(v.Port) + "/dict/update"
 		l.Info("going to update the dict from", targetURL)
-		res, err := httpclient.Get(v.Address, targetURL, appToken, "auth-token")
+		res, err := httpclient.Get(v.Address, targetURL, appCtx.AccessToken(), "auth-token")
 		if err != nil {
 			//error while making the request to update the dict
 			l.Error("error while updating the dict from octopus service at", targetURL, err)

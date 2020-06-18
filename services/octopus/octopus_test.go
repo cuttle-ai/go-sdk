@@ -8,18 +8,18 @@ import (
 	"os"
 	"testing"
 
+	"github.com/cuttle-ai/brain/appctx"
 	"github.com/cuttle-ai/brain/env"
-	"github.com/cuttle-ai/brain/log"
 	"github.com/cuttle-ai/go-sdk/services/octopus"
 )
 
 func TestRemoveDict(t *testing.T) {
-	l := log.NewLogger()
-	env.LoadEnv(l)
 	appToken := os.Getenv("APP_TOKEN")
 	discoveryURL := os.Getenv("DISCOVERY_URL")
 	discoveryToken := os.Getenv("DISCOVERY_TOKEN")
-	err := octopus.RemoveDict(l, discoveryURL, discoveryToken, appToken)
+	appCtx := appctx.NewAppCtx(appToken, discoveryToken, discoveryURL)
+	env.LoadEnv(appCtx.Logger())
+	err := octopus.RemoveDict(appCtx)
 	if err != nil {
 		t.Error("error while removing the dict from octopus service", err)
 	}

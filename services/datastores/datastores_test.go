@@ -8,18 +8,18 @@ import (
 	"os"
 	"testing"
 
+	"github.com/cuttle-ai/brain/appctx"
 	"github.com/cuttle-ai/brain/env"
-	"github.com/cuttle-ai/brain/log"
 	"github.com/cuttle-ai/go-sdk/services/datastores"
 )
 
 func TestListDatastores(t *testing.T) {
-	l := log.NewLogger()
-	env.LoadEnv(l)
 	appToken := os.Getenv("APP_TOKEN")
 	discoveryURL := os.Getenv("DISCOVERY_URL")
 	discoveryToken := os.Getenv("DISCOVERY_TOKEN")
-	_, err := datastores.ListDatastores(l, discoveryURL, discoveryToken, appToken)
+	appCtx := appctx.NewAppCtx(appToken, discoveryToken, discoveryURL)
+	env.LoadEnv(appCtx.Logger())
+	_, err := datastores.ListDatastores(appCtx)
 	if err != nil {
 		t.Error("error while getting the list of datastores", err)
 	}
