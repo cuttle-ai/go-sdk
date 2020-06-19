@@ -88,3 +88,15 @@ func SendInfoNotification(appCtx appctx.AppContext, n models.Notification) error
 	n.Event = models.InfoNotification
 	return sendNotification(appCtx, n)
 }
+
+//SendErrorNotification will send a error notification to the user's websocket clients
+func SendErrorNotification(appCtx appctx.AppContext, n models.Notification) error {
+	n.Event = models.ErrorNotification
+	return sendNotification(appCtx, n)
+}
+
+//SendSuccessNotification will send a success notification to the user's websocket clients
+func SendSuccessNotification(appCtx appctx.AppContext, n models.Notification) error {
+	n.Event = models.SuccessNotification
+	return sendNotification(appCtx, n)
+}
