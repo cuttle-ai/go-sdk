@@ -47,7 +47,7 @@ func sendNotification(appCtx appctx.AppContext, n models.Notification) error {
 		return err
 	}
 	for _, v := range svs {
-		targetURL := "http://" + v.Address + ":" + strconv.Itoa(v.Port) + "/notifications/send"
+		targetURL := "http://" + v.Address + ":" + strconv.Itoa(v.Port) + "/notification/send"
 		l.Info("going to send notification to websockets server at", targetURL)
 		res, err := httpclient.Post(v.Address, targetURL, appCtx.AccessToken(), "auth-token", bytes.NewBuffer(payload))
 		if err != nil {
