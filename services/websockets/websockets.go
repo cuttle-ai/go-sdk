@@ -100,3 +100,9 @@ func SendSuccessNotification(appCtx appctx.AppContext, n models.Notification) er
 	n.Event = models.SuccessNotification
 	return sendNotification(appCtx, n)
 }
+
+//SendActionNotification will send an action notification to websocket server
+func SendActionNotification(appCtx appctx.AppContext, n models.Notification) error {
+	n.Event = models.ActionNotification
+	return sendNotification(appCtx, n)
+}
